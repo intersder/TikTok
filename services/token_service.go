@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	uuid "github.com/satori/go.uuid"
 	"strings"
 	"time"
@@ -38,6 +39,11 @@ func (s *tokenService) GenerateToken(user *model.User) (string, error) {
 }
 
 func (s *tokenService) GetUserByToken(token string) (*model.User, error) {
+
+	if len(token) == 0 {
+		return nil, errors.New("token is empty")
+	}
+
 	key := "login:token:" + token
 	var user model.User
 	jsonStr, err := sqls.RDB().Get(context.Background(), key).Result()

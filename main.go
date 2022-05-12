@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"vibrato/config"
 	"vibrato/model"
 	"vibrato/sqls"
 )
@@ -18,9 +19,9 @@ func init() {
 	gormConf := &gorm.Config{}
 
 	// 初始化日志
-	if file, err := os.OpenFile(Config.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666); err == nil {
+	if file, err := os.OpenFile(config.Config.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666); err == nil {
 		logrus.SetOutput(io.MultiWriter(os.Stdout, file))
-		if Config.ShowSql {
+		if config.Config.ShowSql {
 			gormConf.Logger = logger.New(log.New(file, "\r\n", log.LstdFlags), logger.Config{
 				SlowThreshold: time.Second,
 				Colorful:      true,
@@ -33,15 +34,23 @@ func init() {
 	}
 
 	// 连接数据库
-	if err := sqls.Open(Config.DBUrl, gormConf, 32, 128, model.Models...); err != nil {
+	if err := sqls.Open(config.Config.DBUrl, gormConf, 32, 128, model.Models...); err != nil {
 		logrus.Error(err)
 	}
 	// 连接redis
-	sqls.OpenRedisClient(Config.RDBUrl, Config.RDBPassword, 0)
+	sqls.OpenRedisClient(config.Config.RDBUrl, config.Config.RDBPassword, 0)
 
 }
 
 func main() {
+
+	//videos, err := services.VideoService.Feed(1652274797)
+	//if err != nil {
+	//	print(err)
+	//	return
+	//}
+	//bytes, _ := json.Marshal(videos)
+	//print(string(bytes))
 
 	//user := model.User{
 	//	Name: "dousheng",
@@ -88,6 +97,7 @@ func main() {
 	//	return
 	//}
 	//fmt.Printf(string(bytes))
+	//print(filepath.Ext("123.mp4"))
 
 	r := gin.Default()
 	initRouter(r)

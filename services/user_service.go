@@ -18,30 +18,42 @@ type userService struct {
 }
 
 func (s userService) Login(username string, password string) (*model.User, error) {
-	user := repository.UserRepository.GetUserByUsername(username)
-	if user == nil {
+	userEntity := repository.UserRepository.GetUserByUsername(username)
+	if userEntity == nil {
 		return nil, errors.New("用户不存在")
 	}
-	if !passwd.Matches(user.Password, password) {
+	if !passwd.Matches(userEntity.Password, password) {
 		return nil, errors.New("密码错误")
 	}
-	return user, nil
+	return &model.User{
+		Id:            userEntity.Id,
+		Name:          userEntity.Name,
+		FollowCount:   userEntity.FollowCount,
+		FollowerCount: userEntity.FollowerCount,
+		IsFollow:      false,
+	}, nil
 }
 
 func (s *userService) Register(username, name, password string) (*model.User, error) {
 
-	user := &model.User{
+	userEntity := &model.UserEntity{
 		Username: sql.NullString{
 			String: username,
 			Valid:  len(username) > 0,
 		},
 		Name:     name,
-		Password: password,
+		Password: passwd.EncodePassword(password),
 	}
 
-	err := repository.UserRepository.Create(user)
+	err := repository.UserRepository.Create(userEntity)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return &model.User{
+		Id:            userEntity.Id,
+		Name:          userEntity.Name,
+		FollowCount:   userEntity.FollowCount,
+		FollowerCount: userEntity.FollowerCount,
+		IsFollow:      false,
+	}, nil
 }
