@@ -58,3 +58,14 @@ CREATE TABLE `videos`
     PRIMARY KEY (`video_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='视频表';
+
+DROP TABLE IF EXISTS `password`;
+CREATE TABLE `password`
+(
+    `user_id`     bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT '用户id',
+    `user_name`       varchar(128)        NOT NULL,
+    `password`     varchar(128)         NOT NULL,
+    `token` varchar(128)           NOT NULL,
+    PRIMARY KEY (`user_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='登录密码表';
